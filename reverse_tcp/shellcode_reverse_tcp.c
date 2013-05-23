@@ -32,7 +32,7 @@ int main(void) {
 
    host_addr.sin_family = AF_INET;
    host_addr.sin_port = htons(4444);
-   host_addr.sin_addr.s_addr = inet_addr("80.245.22.153");
+   host_addr.sin_addr.s_addr = inet_addr("192.168.2.1");
 
    memset(&(host_addr.sin_zero), '\0', 8);
 

