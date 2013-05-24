@@ -26,9 +26,9 @@ _start:
 	; create_socket
 
 	;null eax for cdq
-    xor eax, eax
+    	xor eax, eax
 
-    ;null the edx
+    	;null the edx
 	cdq
 
 	; syscall 102 in eax
